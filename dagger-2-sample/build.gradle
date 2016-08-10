@@ -1,0 +1,88 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+group = 'org.devoware'
+version = 1.0
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'https://github.com/cpdevoto/maven-repository/raw/master/' }
+}
+
+dependencies {
+    compile     'org.slf4j:log4j-over-slf4j:1.7.21',
+                'org.slf4j:jcl-over-slf4j:1.7.21',
+                'ch.qos.logback:logback-core:1.1.7',
+                'ch.qos.logback:logback-classic:1.1.7',
+                'com.google.guava:guava:19.0',
+                'com.fasterxml.jackson.core:jackson-core:2.8.1',
+                'com.fasterxml.jackson.core:jackson-databind:2.8.1',
+                'com.fasterxml.jackson.core:jackson-annotations:2.8.1',
+                'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.8.1',
+                'org.apache.commons:commons-lang3:3.4',
+                'javax.validation:validation-api:1.1.0.Final',
+                'org.hibernate:hibernate-validator:5.2.4.Final',
+                'org.glassfish:javax.el:3.0.0',
+                'com.google.dagger:dagger:2.2',
+                'org.devoware:yaml-configuration:1.0',
+                'org.apache.tomcat:tomcat-jdbc:8.5.4'
+    
+    compileOnly 'com.google.code.findbugs:annotations:3.0.1',
+                'com.google.dagger:dagger-compiler:2.2'            
+                
+             
+    testCompile 'junit:junit:4.12', 
+                'org.mockito:mockito-core:1.10.19',
+                'org.hamcrest:hamcrest-all:1.3'     
+}
+
+eclipse.project {
+   buildCommand 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+   natures 'edu.umd.cs.findbugs.plugin.eclipse.findbugsNature'
+}
+
+tasks.cleanEclipseJdt {
+   doFirst {
+       delete file('.factorypath')
+   }
+}
+
+eclipse {
+  jdt.file.withProperties { 
+    it['org.eclipse.jdt.core.compiler.processAnnotations'] = 'enabled'
+  }
+}
+
+tasks.eclipseJdt {
+   doFirst {
+       def aptPrefs = 
+           file('.settings/org.eclipse.jdt.apt.core.prefs')
+       aptPrefs.parentFile.mkdirs()
+
+	   aptPrefs.text = """\
+	   eclipse.preferences.version=1
+	   org.eclipse.jdt.apt.aptEnabled=true
+	   org.eclipse.jdt.apt.genSrcDir=.apt_generated
+	   org.eclipse.jdt.apt.reconcileEnabled=true
+	   """.stripIndent()
+   
+	   file('.factorypath').withWriter {
+	       new groovy.xml.MarkupBuilder(it).'factorypath' {
+	           FileCollection libs = (configurations.compile + configurations.compileOnly).filter {lib ->
+				   lib.name.startsWith('dagger') ||
+				   lib.name.startsWith('guava') ||
+				   lib.name.startsWith('javax.inject')
+	           }
+	           libs.each {lib ->
+	               factorypathentry(
+	                   kind: 'EXTJAR',
+	                   id: lib.absolutePath,
+	                   enabled: true,
+	                   runInBatchMode: false
+	               )
+	           }
+	       }
+	   }
+   }
+}
