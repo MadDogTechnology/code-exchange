@@ -1,0 +1,85 @@
+database20:
+  # the name of your JDBC driver
+  driverClass: org.postgresql.Driver
+
+  # the username
+  user: postgres
+
+  # the password
+  password: passwordanything1
+
+  # the JDBC URL
+  url: jdbc:postgresql://localhost/dbfor20?currentSchema=public
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+
+  # the timeout before a connection validation queries fail, says postgres not implemented, so i comment off
+  # validationQueryTimeout: 3s
+
+  initialSize: 2
+
+  # the minimum number of connections to keep open
+  minSize: 2
+
+  # the maximum number of connections to keep open
+  maxSize: 4
+
+  # whether or not idle connections should be validated
+  checkConnectionWhileIdle: false
+
+  # the amount of time to sleep between runs of the idle connection validation, abandoned cleaner and idle pool resizing
+  evictionInterval: 10s
+
+  # the minimum amount of time an connection must sit idle in the pool before it is eligible for eviction
+  minIdleTime: 1 minute
+
+database:
+  # the name of your JDBC driver
+  driverClass: org.postgresql.Driver
+
+  # the username
+  user: postgres
+
+  # the password
+  password: passwordanything1
+
+  # the JDBC URL
+  url: jdbc:postgresql://localhost/dbfor30?currentSchema=public
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+
+  # the timeout before a connection validation queries fail, says postgres not implemented, so i comment off
+  # validationQueryTimeout: 3s
+
+  initialSize: 2
+
+  # the minimum number of connections to keep open
+  minSize: 2
+
+  # the maximum number of connections to keep open
+  maxSize: 4
+
+  # whether or not idle connections should be validated
+  checkConnectionWhileIdle: false
+
+  # the amount of time to sleep between runs of the idle connection validation, abandoned cleaner and idle pool resizing
+  evictionInterval: 10s
+
+  # the minimum amount of time an connection must sit idle in the pool before it is eligible for eviction
+  minIdleTime: 1 minute
