@@ -1,0 +1,16 @@
+captain-planet
+resolute-common-util
+resolute-external-api
+resolute-internal-api
+maddog-flume-ng
+java-standalone-app
+transaction-watchdog
+resolute-jre
+resolute-agent
+resolute-security-gateway
+resolute-sso-proxy
+resolute-provisioning-service
+resolute-niagara-modules
+flink-current-value
+flink-kpi-classifier
+flink-core-kpi
