@@ -1,4 +1,6 @@
 var fs = require("fs");
+var lodash = require('lodash/core');
+
 var token = JSON.parse(fs.readFileSync("auth.json")).token;
 if (!token) {
     return;
@@ -26,7 +28,7 @@ github.authenticate({
     token: token,
 });
 
-fs.readFileSync("git-repos.txt").toString().split('\n').forEach(function (line) {
+lodash.forEach(fs.readFileSync("git-repos.txt").toString().split('\n'), function (line) {
     var reponame = line.trim();
     console.log(reponame);
 
@@ -35,22 +37,25 @@ fs.readFileSync("git-repos.txt").toString().split('\n').forEach(function (line) 
             owner: "MadDogTechnology",
             sha: "develop", // SHA or BRANCH to start listing commits from
             repo: reponame,
-            since: "2017-04-06T00:00:00Z",
-            until: "2017-05-01T00:00:00Z",
-            page: "1",
-            per_page: 10
+            since: new Date("2017/04/06").toISOString(), // 2017-04-06T04:00:00.000Z
+            until: new Date("2017/04/20").toISOString(), // 2017-04-20T04:00:00.000Z
+            page: 1,
+            per_page: 10,
         }, function (err, res) {
             if (!err && res.data.length > 0) {
-                for (var i = 0, len = res.data.length; i < len; i++) {
-                    var message = res.data[i].commit.message;
-                    // ignoring branch cut meaningless names
-                    if (message.indexOf('dropping changes') < 0 && message.indexOf('Version freeze for') < 0 && message.indexOf('Bump releaseNum for') < 0 && message.indexOf("Merge branch 'develop' of") < 0) {
-                        console.log(reponame + ":" + res.data[i].commit.author.name + ":" + res.data[i].commit.committer.date + ":" + res.data[i].commit.message);
+                lodash.forEach(res.data, function(adata){
+                    var message = adata.commit.message;
+                    // ignoring branch cut commit messages, which are meaningless for this filtering
+                    if (message.indexOf('dropping changes') < 0 
+                        && message.indexOf('Version freeze for') < 0 
+                        && message.indexOf('Bump releaseNum for') < 0
+                    ) {
+                        friendlydate = new Date(adata.commit.committer.date).toLocaleString();
+                        console.log(reponame + ":" + adata.commit.author.name + ":" + friendlydate + ":" + adata.commit.message);
                         log.write(reponame + '\n');
-                        break;
+                        return false; // break;
                     }
-                }
-                
+                });
             }
             // console.log(err, JSON.stringify(res));
         });
