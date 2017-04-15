@@ -29,7 +29,7 @@ github.authenticate({
 });
 
 lodash.forEach(fs.readFileSync("git-repos.txt").toString().split('\n'), function (line) {
-    var reponame = line.trim();
+    let reponame = line.trim();
     console.log(reponame);
 
     github.repos.getCommits(
@@ -44,20 +44,23 @@ lodash.forEach(fs.readFileSync("git-repos.txt").toString().split('\n'), function
         }, function (err, res) {
             if (!err && res.data.length > 0) {
                 lodash.forEach(res.data, function(adata){
-                    var message = adata.commit.message;
+                    let message = adata.commit.message;
                     // ignoring branch cut commit messages, which are meaningless for this filtering
                     if (message.indexOf('dropping changes') < 0 
                         && message.indexOf('Version freeze for') < 0 
                         && message.indexOf('Bump releaseNum for') < 0
                     ) {
                         friendlydate = new Date(adata.commit.committer.date).toLocaleString();
-                        console.log(reponame + ":" + adata.commit.author.name + ":" + friendlydate + ":" + adata.commit.message);
+                        console.log(`${reponame},${adata.commit.author.name},${friendlydate},${adata.commit.message}`);
                         log.write(reponame + '\n');
                         return false; // break;
                     }
                 });
             }
-            // console.log(err, JSON.stringify(res));
+            if (err) {
+                console.log(err);
+                process.exit(-1);
+            }
         });
 });
 
